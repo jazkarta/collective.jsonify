@@ -344,100 +344,103 @@ class Wrapper(dict):
         import base64
         fields = self.context.schema.fields()
         self['at_fields'] = [unicode(field.__name__) for field in fields]
-        # for field in fields:
-        #     fieldname = unicode(field.__name__)
-        #     type_ = field.__class__.__name__
-        # 
-        #     if type_ in ['StringField', 'BooleanField', 'LinesField',
-        #             'IntegerField', 'TextField', 'SimpleDataGridField',
-        #             'FloatField', 'FixedPointField', 'TALESString',
-        #             'TALESLines', 'ZPTField', 'DataGridField', 'EmailField']:
-        # 
-        #         try:
-        #             value = field.getRaw(self.context)
-        #         except AttributeError:
-        #             value = field.get(self.context)
-        # 
-        #         if callable(value) is True:
-        #             value = value()
-        # 
-        #         if value and type_ in ['StringField', 'TextField']:
-        #             try:
-        #                 value = self.decode(value)
-        #             except AttributeError:
-        #                 # maybe an int?
-        #                 value = unicode(value)
-        #             except Exception, e:
-        #                 raise Exception('problems with %s: %s' %
-        #                         (self.context.absolute_url(), str(e)))
-        #         elif value and type_ == 'DataGridField':
-        #              for i, row in enumerate(value):
-        #                  for col_key in row.keys():
-        #                      col_value = row[col_key]
-        #                      if type(col_value) in (unicode, str):
-        #                          value[i][col_key] = self.decode(col_value)
-        # 
-        #         try:
-        #             ct = field.getContentType(self.context)
-        #         except AttributeError:
-        #             ct = ''
-        #         self[unicode(fieldname)] = value
-        #         self[unicode('_content_type_')+fieldname] = ct
-        # 
-        #     elif type_ in ['DateTimeField']:
-        #         value = str(field.get(self.context))
-        #         if value:
-        #             self[unicode(fieldname)] = value
-        # 
-        #     elif type_ in ['ImageField', 'FileField', 'AttachmentField']:
-        #         fieldname = unicode('_datafield_'+fieldname)
-        #         value = field.get(self.context)
-        #         value2 = value
-        # 
-        #         if type(value) is not str:
-        #             if type(value.data) is str:
-        #                 value = base64.b64encode(value.data)
-        #             else:
-        #                 data = value.data
-        #                 value = ''
-        #                 while data is not None:
-        #                     value += data.data
-        #                     data = data.next
-        #                 value = base64.b64encode(value)
-        # 
-        #         try:
-        #             max_filesize = int(os.environ.get('JSONIFY_MAX_FILESIZE', 20000000))
-        #         except ValueError:
-        #             max_filesize = 20000000
-        # 
-        #         if value and len(value) < max_filesize:
-        #             size = value2.getSize()
-        #             fname = field.getFilename(self.context)
-        #             try:
-        #                 fname = self.decode(fname)
-        #             except AttributeError:
-        #                 # maybe an int?
-        #                 fname = unicode(fname)
-        #             except Exception, e:
-        #                 raise Exception('problems with %s: %s' %
-        #                         (self.context.absolute_url(), str(e)))
-        # 
-        #             ctype = field.getContentType(self.context)
-        #             self[fieldname] = {
-        #                 'data': value,
-        #                 'size': size,
-        #                 'filename': fname or '',
-        #                 'content_type': ctype}
-        # 
-        #     elif type_ in ['ReferenceField']:
-        #         pass
-        # 
-        #     elif type_ in ['ComputedField']:
-        #         continue
-        # 
-        #     else:
-        #         raise TypeError('Unknown field type for ArchetypesWrapper in '
-        #                 '%s in %s' % (fieldname, self.context.absolute_url()))
+        for field in fields:
+            fieldname = unicode(field.__name__)
+            type_ = field.__class__.__name__
+        
+            if type_ in ['StringField', 'BooleanField', 'LinesField',
+                    'IntegerField', 'TextField', 'SimpleDataGridField',
+                    'FloatField', 'FixedPointField', 'TALESString',
+                    'TALESLines', 'ZPTField', 'DataGridField', 'EmailField']:
+        
+                try:
+                    value = field.getRaw(self.context)
+                except AttributeError:
+                    value = field.get(self.context)
+        
+                if callable(value) is True:
+                    value = value()
+        
+                if value and type_ in ['StringField', 'TextField']:
+                    try:
+                        value = self.decode(value)
+                    except AttributeError:
+                        # maybe an int?
+                        value = unicode(value)
+                    except Exception, e:
+                        raise Exception('problems with %s: %s' %
+                                (self.context.absolute_url(), str(e)))
+                elif value and type_ == 'DataGridField':
+                     for i, row in enumerate(value):
+                         for col_key in row.keys():
+                             col_value = row[col_key]
+                             if type(col_value) in (unicode, str):
+                                 value[i][col_key] = self.decode(col_value)
+        
+                try:
+                    ct = field.getContentType(self.context)
+                except AttributeError:
+                    ct = ''
+                self[unicode(fieldname)] = value
+                self[unicode('_content_type_')+fieldname] = ct
+        
+            elif type_ in ['DateTimeField']:
+                value = str(field.get(self.context))
+                if value:
+                    self[unicode(fieldname)] = value
+        
+            elif type_ in ['ImageField', 'FileField', 'AttachmentField']:
+                fieldname = unicode('_datafield_'+fieldname)
+                value = field.get(self.context)
+                value2 = value
+        
+                if type(value) is not str:
+                    if type(value.data) is str:
+                        value = base64.b64encode(value.data)
+                    else:
+                        data = value.data
+                        value = ''
+                        while data is not None:
+                            value += data.data
+                            data = data.next
+                        value = base64.b64encode(value)
+        
+                try:
+                    max_filesize = int(os.environ.get('JSONIFY_MAX_FILESIZE', 20000000))
+                except ValueError:
+                    max_filesize = 20000000
+        
+                if value and len(value) < max_filesize:
+                    size = value2.getSize()
+                    fname = field.getFilename(self.context)
+                    try:
+                        fname = self.decode(fname)
+                    except AttributeError:
+                        # maybe an int?
+                        fname = unicode(fname)
+                    except Exception, e:
+                        raise Exception('problems with %s: %s' %
+                                (self.context.absolute_url(), str(e)))
+        
+                    ctype = field.getContentType(self.context)
+                    self[fieldname] = {
+                        'data': value,
+                        'size': size,
+                        'filename': fname or '',
+                        'content_type': ctype}
+        
+            elif type_ in ['ReferenceField']:
+                # pass
+                self[fieldname] = 'reference field'
+        
+            elif type_ in ['ComputedField']:
+                # continue
+                self[fieldname] = 'computed field'
+        
+            else:
+                self[fieldname] = 'custom field of type: %s' % type_
+                # raise TypeError('Unknown field type for ArchetypesWrapper in '
+                #         '%s in %s' % (fieldname, self.context.absolute_url()))
 
     # def get_references(self):
     #     """ AT references
