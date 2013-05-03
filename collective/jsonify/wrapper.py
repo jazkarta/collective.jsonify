@@ -343,133 +343,134 @@ class Wrapper(dict):
 
         import base64
         fields = self.context.schema.fields()
-        for field in fields:
-            fieldname = unicode(field.__name__)
-            type_ = field.__class__.__name__
+        self['at_fields'] = [unicode(field.__name__) for field in fields]
+        # for field in fields:
+        #     fieldname = unicode(field.__name__)
+        #     type_ = field.__class__.__name__
+        # 
+        #     if type_ in ['StringField', 'BooleanField', 'LinesField',
+        #             'IntegerField', 'TextField', 'SimpleDataGridField',
+        #             'FloatField', 'FixedPointField', 'TALESString',
+        #             'TALESLines', 'ZPTField', 'DataGridField', 'EmailField']:
+        # 
+        #         try:
+        #             value = field.getRaw(self.context)
+        #         except AttributeError:
+        #             value = field.get(self.context)
+        # 
+        #         if callable(value) is True:
+        #             value = value()
+        # 
+        #         if value and type_ in ['StringField', 'TextField']:
+        #             try:
+        #                 value = self.decode(value)
+        #             except AttributeError:
+        #                 # maybe an int?
+        #                 value = unicode(value)
+        #             except Exception, e:
+        #                 raise Exception('problems with %s: %s' %
+        #                         (self.context.absolute_url(), str(e)))
+        #         elif value and type_ == 'DataGridField':
+        #              for i, row in enumerate(value):
+        #                  for col_key in row.keys():
+        #                      col_value = row[col_key]
+        #                      if type(col_value) in (unicode, str):
+        #                          value[i][col_key] = self.decode(col_value)
+        # 
+        #         try:
+        #             ct = field.getContentType(self.context)
+        #         except AttributeError:
+        #             ct = ''
+        #         self[unicode(fieldname)] = value
+        #         self[unicode('_content_type_')+fieldname] = ct
+        # 
+        #     elif type_ in ['DateTimeField']:
+        #         value = str(field.get(self.context))
+        #         if value:
+        #             self[unicode(fieldname)] = value
+        # 
+        #     elif type_ in ['ImageField', 'FileField', 'AttachmentField']:
+        #         fieldname = unicode('_datafield_'+fieldname)
+        #         value = field.get(self.context)
+        #         value2 = value
+        # 
+        #         if type(value) is not str:
+        #             if type(value.data) is str:
+        #                 value = base64.b64encode(value.data)
+        #             else:
+        #                 data = value.data
+        #                 value = ''
+        #                 while data is not None:
+        #                     value += data.data
+        #                     data = data.next
+        #                 value = base64.b64encode(value)
+        # 
+        #         try:
+        #             max_filesize = int(os.environ.get('JSONIFY_MAX_FILESIZE', 20000000))
+        #         except ValueError:
+        #             max_filesize = 20000000
+        # 
+        #         if value and len(value) < max_filesize:
+        #             size = value2.getSize()
+        #             fname = field.getFilename(self.context)
+        #             try:
+        #                 fname = self.decode(fname)
+        #             except AttributeError:
+        #                 # maybe an int?
+        #                 fname = unicode(fname)
+        #             except Exception, e:
+        #                 raise Exception('problems with %s: %s' %
+        #                         (self.context.absolute_url(), str(e)))
+        # 
+        #             ctype = field.getContentType(self.context)
+        #             self[fieldname] = {
+        #                 'data': value,
+        #                 'size': size,
+        #                 'filename': fname or '',
+        #                 'content_type': ctype}
+        # 
+        #     elif type_ in ['ReferenceField']:
+        #         pass
+        # 
+        #     elif type_ in ['ComputedField']:
+        #         continue
+        # 
+        #     else:
+        #         raise TypeError('Unknown field type for ArchetypesWrapper in '
+        #                 '%s in %s' % (fieldname, self.context.absolute_url()))
 
-            if type_ in ['StringField', 'BooleanField', 'LinesField',
-                    'IntegerField', 'TextField', 'SimpleDataGridField',
-                    'FloatField', 'FixedPointField', 'TALESString',
-                    'TALESLines', 'ZPTField', 'DataGridField', 'EmailField']:
+    # def get_references(self):
+    #     """ AT references
+    #     """
+    #     try:
+    #         from Products.Archetypes.interfaces import IReferenceable
+    #         if not IReferenceable.providedBy(self.context):
+    #             return
+    #     except:
+    #         return
+    # 
+    #     self['_atrefs'] = {}
+    #     self['_atbrefs'] = {}
+    #     relationships = self.context.getRelationships()
+    #     for rel in relationships:
+    #         self['_atrefs'][rel] = []
+    #         refs = self.context.getRefs(relationship=rel)
+    #         for ref in refs:
+    #             if ref is not None:
+    #                 self['_atrefs'][rel].append('/'.join(ref.getPhysicalPath()))
+    #     brelationships = self.context.getBRelationships()
+    #     for brel in brelationships:
+    #         self['_atbrefs'][brel] = []
+    #         brefs = self.context.getBRefs(relationship=brel)
+    #         for bref in brefs:
+    #             if bref is not None:
+    #                 self['_atbrefs'][brel].append('/'.join(bref.getPhysicalPath()))
 
-                try:
-                    value = field.getRaw(self.context)
-                except AttributeError:
-                    value = field.get(self.context)
-
-                if callable(value) is True:
-                    value = value()
-
-                if value and type_ in ['StringField', 'TextField']:
-                    try:
-                        value = self.decode(value)
-                    except AttributeError:
-                        # maybe an int?
-                        value = unicode(value)
-                    except Exception, e:
-                        raise Exception('problems with %s: %s' %
-                                (self.context.absolute_url(), str(e)))
-                elif value and type_ == 'DataGridField':
-                     for i, row in enumerate(value):
-                         for col_key in row.keys():
-                             col_value = row[col_key]
-                             if type(col_value) in (unicode, str):
-                                 value[i][col_key] = self.decode(col_value)
-
-                try:
-                    ct = field.getContentType(self.context)
-                except AttributeError:
-                    ct = ''
-                self[unicode(fieldname)] = value
-                self[unicode('_content_type_')+fieldname] = ct
-
-            elif type_ in ['DateTimeField']:
-                value = str(field.get(self.context))
-                if value:
-                    self[unicode(fieldname)] = value
-
-            elif type_ in ['ImageField', 'FileField', 'AttachmentField']:
-                fieldname = unicode('_datafield_'+fieldname)
-                value = field.get(self.context)
-                value2 = value
-
-                if type(value) is not str:
-                    if type(value.data) is str:
-                        value = base64.b64encode(value.data)
-                    else:
-                        data = value.data
-                        value = ''
-                        while data is not None:
-                            value += data.data
-                            data = data.next
-                        value = base64.b64encode(value)
-
-                try:
-                    max_filesize = int(os.environ.get('JSONIFY_MAX_FILESIZE', 20000000))
-                except ValueError:
-                    max_filesize = 20000000
-
-                if value and len(value) < max_filesize:
-                    size = value2.getSize()
-                    fname = field.getFilename(self.context)
-                    try:
-                        fname = self.decode(fname)
-                    except AttributeError:
-                        # maybe an int?
-                        fname = unicode(fname)
-                    except Exception, e:
-                        raise Exception('problems with %s: %s' %
-                                (self.context.absolute_url(), str(e)))
-
-                    ctype = field.getContentType(self.context)
-                    self[fieldname] = {
-                        'data': value,
-                        'size': size,
-                        'filename': fname or '',
-                        'content_type': ctype}
-
-            elif type_ in ['ReferenceField']:
-                pass
-
-            elif type_ in ['ComputedField']:
-                continue
-
-            else:
-                raise TypeError('Unknown field type for ArchetypesWrapper in '
-                        '%s in %s' % (fieldname, self.context.absolute_url()))
-
-    def get_references(self):
-        """ AT references
-        """
-        try:
-            from Products.Archetypes.interfaces import IReferenceable
-            if not IReferenceable.providedBy(self.context):
-                return
-        except:
-            return
-
-        self['_atrefs'] = {}
-        self['_atbrefs'] = {}
-        relationships = self.context.getRelationships()
-        for rel in relationships:
-            self['_atrefs'][rel] = []
-            refs = self.context.getRefs(relationship=rel)
-            for ref in refs:
-                if ref is not None:
-                    self['_atrefs'][rel].append('/'.join(ref.getPhysicalPath()))
-        brelationships = self.context.getBRelationships()
-        for brel in brelationships:
-            self['_atbrefs'][brel] = []
-            brefs = self.context.getBRefs(relationship=brel)
-            for bref in brefs:
-                if bref is not None:
-                    self['_atbrefs'][brel].append('/'.join(bref.getPhysicalPath()))
-
-    def get_translation(self):
-        """ Get LinguaPlone translation linking information.
-        """
-        if not hasattr(self._context, 'getCanonical'):
-            return
-        self['_translationOf'] = '/'.join(self.context.getCanonical(
-                                 ).getPhysicalPath())[len(self.portal_path):]
-        self['_canonicalTranslation'] = self.context.isCanonical()
+    # def get_translation(self):
+    #     """ Get LinguaPlone translation linking information.
+    #     """
+    #     if not hasattr(self._context, 'getCanonical'):
+    #         return
+    #     self['_translationOf'] = '/'.join(self.context.getCanonical(
+    #                              ).getPhysicalPath())[len(self.portal_path):]
+    #     self['_canonicalTranslation'] = self.context.isCanonical()
