@@ -343,7 +343,6 @@ class Wrapper(dict):
 
         import base64
         fields = self.context.schema.fields()
-        self['at_fields'] = [unicode(field.__name__) for field in fields]
         for field in fields:
             fieldname = unicode(field.__name__)
             type_ = field.__class__.__name__
