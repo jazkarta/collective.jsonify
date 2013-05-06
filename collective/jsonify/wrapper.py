@@ -444,7 +444,6 @@ class Wrapper(dict):
                 self[fieldname] = self.decode(value)
 
             elif type_ in ['AddContentField']:
-                import pdb; pdb.set_trace( )
                 contained_ids = self.context.objectIds()
                 contained = {}
                 for oid in contained_ids:
