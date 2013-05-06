@@ -454,10 +454,11 @@ class Wrapper(dict):
                         continue
                     obj_url = obj.absolute_url_path()
                     ctype = self.decode(obj.portal_type)
-                    if ctype in contained:
-                        contained[ctype].append(self.decode(obj_url))
-                    else:
-                        contained[ctype] = [self.decode(obj_url)]
+                    if ctype in field.allowed_types:
+                        if ctype in contained:
+                            contained[ctype].append(self.decode(obj_url))
+                        else:
+                            contained[ctype] = [self.decode(obj_url)]
                 self[fieldname] = contained
         
             else:
