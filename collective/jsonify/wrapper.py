@@ -437,8 +437,11 @@ class Wrapper(dict):
                 self[fieldname] = 'computed field'
 
             elif type_ in ['KcrwWysiwygField']:
-                import pdb; pdb.set_trace( )
-                self[fieldname] = 'custom field of type: KcrwWysiwygField'
+                accessor = field.getAccessor(self.context)
+                value = accessor(self.context)
+                if value is None:
+                    value = ''
+                self[fieldname] = self.decode(value)
 
             elif type_ in ['AddContentField']:
                 import pdb; pdb.set_trace( )
