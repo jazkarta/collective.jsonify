@@ -445,7 +445,21 @@ class Wrapper(dict):
 
             elif type_ in ['AddContentField']:
                 import pdb; pdb.set_trace( )
-                self[fieldname] = 'custom field of type: AddContentField'
+                contained_ids = self.context.objectIds()
+                contained = {}
+                for oid in contained_ids:
+                    try:
+                        obj = self.context.unrestrictedTraverse(oid)
+                    except:
+                        # should we log this condition?  Something got skipped
+                        continue
+                    obj_url = obj.absolute_url_path()
+                    ctype = self.decode(obj.portal_type)
+                    if ctype in contained:
+                        contained[ctype].append(self.decode(obj_url))
+                    else:
+                        contained[ctype] = [self.decode(obj_url)]
+                self[fieldname] = contained
         
             else:
                 self[fieldname] = 'custom field of type: %s' % type_
