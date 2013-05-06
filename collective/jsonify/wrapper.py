@@ -444,10 +444,7 @@ class Wrapper(dict):
                 self[fieldname] = self.decode(value)
 
             elif type_ in ['AddContentField']:
-                accessor = field.getAccessor(self.context)
-                value = accessor(self.context)
-                if value:
-                    import pdb; pdb.set_trace( )
+                import pdb; pdb.set_trace( )
                 self[fieldname] = 'custom field of type: AddContentField'
         
             else:
