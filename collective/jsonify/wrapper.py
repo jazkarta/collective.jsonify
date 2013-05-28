@@ -429,8 +429,8 @@ class Wrapper(dict):
                         'content_type': ctype}
         
             elif type_ in ['ReferenceField']:
-                # pass
-                self[fieldname] = 'reference field'
+                pass
+                # self[fieldname] = 'reference field'
         
             elif type_ in ['ComputedField']:
                 # continue
@@ -466,32 +466,32 @@ class Wrapper(dict):
                 # raise TypeError('Unknown field type for ArchetypesWrapper in '
                 #         '%s in %s' % (fieldname, self.context.absolute_url()))
 
-    # def get_references(self):
-    #     """ AT references
-    #     """
-    #     try:
-    #         from Products.Archetypes.interfaces import IReferenceable
-    #         if not IReferenceable.providedBy(self.context):
-    #             return
-    #     except:
-    #         return
-    # 
-    #     self['_atrefs'] = {}
-    #     self['_atbrefs'] = {}
-    #     relationships = self.context.getRelationships()
-    #     for rel in relationships:
-    #         self['_atrefs'][rel] = []
-    #         refs = self.context.getRefs(relationship=rel)
-    #         for ref in refs:
-    #             if ref is not None:
-    #                 self['_atrefs'][rel].append('/'.join(ref.getPhysicalPath()))
-    #     brelationships = self.context.getBRelationships()
-    #     for brel in brelationships:
-    #         self['_atbrefs'][brel] = []
-    #         brefs = self.context.getBRefs(relationship=brel)
-    #         for bref in brefs:
-    #             if bref is not None:
-    #                 self['_atbrefs'][brel].append('/'.join(bref.getPhysicalPath()))
+    def get_references(self):
+        """ AT references
+        """
+        try:
+            from Products.Archetypes.interfaces import IReferenceable
+            if not IReferenceable.providedBy(self.context):
+                return
+        except:
+            return
+    
+        self['_atrefs'] = {}
+        self['_atbrefs'] = {}
+        relationships = self.context.getRelationships()
+        for rel in relationships:
+            self['_atrefs'][rel] = []
+            refs = self.context.getRefs(relationship=rel)
+            for ref in refs:
+                if ref is not None:
+                    self['_atrefs'][rel].append('/'.join(ref.getPhysicalPath()))
+        brelationships = self.context.getBRelationships()
+        for brel in brelationships:
+            self['_atbrefs'][brel] = []
+            brefs = self.context.getBRefs(relationship=brel)
+            for bref in brefs:
+                if bref is not None:
+                    self['_atbrefs'][brel].append('/'.join(bref.getPhysicalPath()))
 
     # def get_translation(self):
     #     """ Get LinguaPlone translation linking information.
