@@ -462,7 +462,11 @@ class Wrapper(dict):
                 self[fieldname] = contained
 
             elif type_ in ['RecordsField']:
-                self[fieldname] = "records"
+                accessor = field.getAccessor(self.context)
+                value = accessor(self.context)
+                if not value:
+                    value = []
+                self[fieldname] = value
 
             else:
                 self[fieldname] = 'custom field of type: %s' % type_
