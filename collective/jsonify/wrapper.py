@@ -463,7 +463,7 @@ class Wrapper(dict):
 
             elif type_ in ['RecordsField']:
                 accessor = field.getAccessor(self.context)
-                value = accessor(self.context)
+                value = accessor()
                 if not value:
                     value = []
                 self[fieldname] = value
