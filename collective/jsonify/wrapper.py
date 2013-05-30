@@ -387,8 +387,11 @@ class Wrapper(dict):
                 value = str(field.get(self.context))
                 if value:
                     self[unicode(fieldname)] = value
+
+            elif type_ in ['ImageField']:
+                import pdb; pdb.set_trace( )
         
-            elif type_ in ['ImageField', 'FileField', 'AttachmentField']:
+            elif type_ in ['FileField', 'AttachmentField']:
                 fieldname = unicode('_datafield_'+fieldname)
                 value = field.get(self.context)
                 value2 = value
