@@ -460,7 +460,10 @@ class Wrapper(dict):
                         else:
                             contained[ctype] = [self.decode(obj_url)]
                 self[fieldname] = contained
-        
+
+            elif type_ in ['RecordsField']:
+                self[fieldname] = "records"
+
             else:
                 self[fieldname] = 'custom field of type: %s' % type_
                 # raise TypeError('Unknown field type for ArchetypesWrapper in '
