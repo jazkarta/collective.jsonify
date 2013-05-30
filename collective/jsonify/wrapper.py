@@ -389,7 +389,7 @@ class Wrapper(dict):
                     self[unicode(fieldname)] = value
 
             elif type_ in ['ImageField']:
-                base_url_path = self.context.absolute_url_path
+                base_url_path = self.context.absolute_url_path()
                 img_url_path = '/'.join([base_url_path, fieldname])
                 self[fieldname] = img_url_path
         
