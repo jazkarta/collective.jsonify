@@ -389,7 +389,9 @@ class Wrapper(dict):
                     self[unicode(fieldname)] = value
 
             elif type_ in ['ImageField']:
-                import pdb; pdb.set_trace( )
+                base_url_path = self.context.absolute_url_path
+                img_url_path = '/'.join([base_url_path, fieldname])
+                self[fieldname] = img_url_path
         
             elif type_ in ['FileField', 'AttachmentField']:
                 fieldname = unicode('_datafield_'+fieldname)
