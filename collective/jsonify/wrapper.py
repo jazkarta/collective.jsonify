@@ -530,4 +530,8 @@ class Wrapper(dict):
         if self.context.__class__.__name__ != 'Program':
             return
 
-        self['program_schedule'] = self.context.getRawProgramSchedule()
+        schedule = self.context.getRawProgramSchedule()
+        for listing in schedule:
+            listing['date_time'] = str(listing['date_time'])
+
+        self['program_schedule'] = schedule
