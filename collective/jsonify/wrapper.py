@@ -525,3 +525,8 @@ class Wrapper(dict):
     #     self['_translationOf'] = '/'.join(self.context.getCanonical(
     #                              ).getPhysicalPath())[len(self.portal_path):]
     #     self['_canonicalTranslation'] = self.context.isCanonical()
+    
+    def get_program_schedule(self):
+        if self.context.__class__.__name__ != 'Program':
+            return
+        
