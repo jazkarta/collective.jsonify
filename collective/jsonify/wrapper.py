@@ -529,4 +529,5 @@ class Wrapper(dict):
     def get_program_schedule(self):
         if self.context.__class__.__name__ != 'Program':
             return
-        
+
+        self['program_schedule'] = self.context.getRawProgramSchedule()
