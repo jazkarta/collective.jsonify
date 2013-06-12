@@ -446,12 +446,13 @@ class Wrapper(dict):
                         'content_type': ctype}
         
             elif type_ in ['ReferenceField']:
-                # pass
-                self[fieldname] = 'reference field'
+                pass
+                # self[fieldname] = 'reference field'
         
             elif type_ in ['ComputedField']:
                 # continue
-                self[fieldname] = 'computed field'
+                pass
+                # self[fieldname] = 'computed field'
 
             elif type_ in ['KcrwWysiwygField']:
                 accessor = field.getAccessor(self.context)
