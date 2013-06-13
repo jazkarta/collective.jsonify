@@ -533,6 +533,26 @@ class Wrapper(dict):
 
         schedule = self.context.getRawProgramSchedule()
         for listing in schedule:
-            listing['date_time'] = str(listing['date_time'])
+            listing['date_time'] = unicode(listing['date_time'])
 
-        self['program_schedule'] = schedule
+        self[u'program_schedule'] = schedule
+
+    def get_show_airing(self):
+        from Acquisition import aq_parent, aq_inner
+        if self.context.__class__.__name__ != 'Show':
+            return
+
+        try:
+            channels = aq_parent(aq_inner(self.context)).getChannels()
+        except AttributeError:
+            # the parent of this show cannot give us channels, skip it
+            return
+
+        results = {}
+        for channel in channels:
+            airings = self.context.getShowChannelAirings(channel)
+            if not airings:
+                continue
+            results[channel] = [unicode(airing) for airing in airings]
+
+        self[u'show_airings'] = results
