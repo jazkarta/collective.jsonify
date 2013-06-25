@@ -388,7 +388,7 @@ class Wrapper(dict):
                 if value:
                     self[unicode(fieldname)] = value
 
-            elif type_ in ['ImageField', 'FileField']:
+            elif type_ in ['ImageField']:
                 base_url_path = self.context.absolute_url_path()
                 img_url_path = '/'.join([base_url_path, fieldname])
                 fname = field.getFilename(self.context)
@@ -402,6 +402,23 @@ class Wrapper(dict):
                         raise Exception('problems with %s: %s' %
                                 (self.context.absolute_url(), str(e)))
                     self[fieldname] = [fname, img_url_path]
+                else:
+                    self[fieldname] = [u'', u'']
+
+            elif type_ in ['FileField']:
+                base_url_path = self.context.absolute_url_path()
+                file_url_path = base_url_path
+                fname = field.getFilename(self.context)
+                if fname:
+                    try:
+                        fname = self.decode(fname)
+                    except AttributeError:
+                        # maybe an int?
+                        fname = unicode(fname)
+                    except Exception, e:
+                        raise Exception('problems with %s: %s' %
+                                (self.context.absolute_url(), str(e)))
+                    self[fieldname] = [fname, file_url_path]
                 else:
                     self[fieldname] = [u'', u'']
         
