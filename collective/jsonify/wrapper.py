@@ -388,7 +388,7 @@ class Wrapper(dict):
                 if value:
                     self[unicode(fieldname)] = value
 
-            elif type_ in ['ImageField']:
+            elif type_ in ['ImageField', 'FileField']:
                 base_url_path = self.context.absolute_url_path()
                 img_url_path = '/'.join([base_url_path, fieldname])
                 fname = field.getFilename(self.context)
@@ -405,7 +405,7 @@ class Wrapper(dict):
                 else:
                     self[fieldname] = [u'', u'']
         
-            elif type_ in ['FileField', 'AttachmentField']:
+            elif type_ in ['AttachmentField']:
                 fieldname = unicode('_datafield_'+fieldname)
                 value = field.get(self.context)
                 value2 = value
