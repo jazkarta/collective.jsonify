@@ -573,3 +573,17 @@ class Wrapper(dict):
             results[channel] = [unicode(airing) for airing in airings]
 
         self[u'show_airings'] = results
+
+    def get_djpick_extras(self):
+        if self.context.__class__.__name__ != 'DJPick':
+            return
+
+        from Acquisition import aq_parent, aq_inner
+
+        albums = self.context.getAlbumsStructure
+        self[u'albums_structure'] = albums
+
+        parent = aq_parent(aq_inner(self.context)) # this is a djpicksdj
+        self[u'dj_id'] = parent.getHost()
+        self[u'parent_path'] = '/'.join(parent.getPhysicalPath())
+        # get extra data needed for the DJPick type.
