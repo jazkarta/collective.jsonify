@@ -580,7 +580,7 @@ class Wrapper(dict):
 
         from Acquisition import aq_parent, aq_inner
 
-        albums = self.context.getAlbumsStructure
+        albums = self.context.getAlbumsStructure():
         self[u'albums_structure'] = albums
 
         parent = aq_parent(aq_inner(self.context)) # this is a djpicksdj
