@@ -587,3 +587,10 @@ class Wrapper(dict):
         self[u'dj_id'] = parent.getHost()
         self[u'parent_path'] = '/'.join(parent.getPhysicalPath())
         # get extra data needed for the DJPick type.
+
+    def get_media_info(self):
+        values = {}
+        for meth in ('get_encoding_service_info', 'get_castfire_podcast_info'):
+            if hasattr(self._context, meth):
+                values[meth] = getattr(self.context, meth)()
+        return values
