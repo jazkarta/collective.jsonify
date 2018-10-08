@@ -216,8 +216,6 @@ class Wrapper(dict):
         except:
             IExtensionField = None
 
-        import base64
-
         fields = []
         for schemata in self.context.Schemata().values():
             fields.extend(schemata.fields())
@@ -306,68 +304,42 @@ class Wrapper(dict):
                 'AttachmentField',
                 'ExtensionBlobField',
             ]:
-                fieldname = unicode('_datafield_' + fieldname)
-                value = self._get_at_field_value(field)
-                value2 = value
-
-                if value and not isinstance(value, str):
-                    if isinstance(getattr(value, 'data', None), str):
-                        value = base64.b64encode(value.data)
-                    else:
-                        data = value.data
-                        value = ''
-                        while data is not None:
-                            value += data.data
-                            data = data.next
-                        value = base64.b64encode(value)
-
+                value = unicode(self.context.absolute_url() + '/' + fieldname)
                 try:
-                    max_filesize = int(
-                        os.environ.get('JSONIFY_MAX_FILESIZE', 20000000)
-                    )
-                except ValueError:
-                    max_filesize = 20000000
+                    ctype = field.getContentType(self.context)
+                except AttributeError:
+                    ctype = 'UNKNOWN'
+                try:
+                    size = field.get_size(self.context) or None
+                except AttributeError:
+                    size = None
+                try:
+                    fname = field.getFilename(self.context)
+                except AttributeError:
+                    fname = None
+                try:
+                    dimensions = field.getSize(self.context)
+                except AttributeError:
+                    pass
 
-                if value and len(value) < max_filesize:
-                    size = value2.getSize()
-                    try:
-                        fname = field.getFilename(self.context)
-                    except AttributeError:
-                        fname = value2.getFilename()
-
-                    try:
-                        fname = self.decode(fname)
-                    except AttributeError:
-                        # maybe an int?
-                        fname = unicode(fname)
-                    except Exception, e:
-                        raise Exception(
-                            'problems with %s: %s' % (
-                                self.context.absolute_url(), str(e)
-                            )
-                        )
-
-                    try:
-                        ctype = field.getContentType(self.context)
-                    except AttributeError:
-                        ctype = value2.getContentType()
-
+                if fname or size or (dimensions and dimensions[0]):
                     self[fieldname] = {
-                        'data': value,
+                        'url': value,
                         'size': size,
                         'filename': fname or '',
                         'content_type': ctype,
-                        'encoding': 'base64'
                     }
+                else:
+                    self[fieldname] = None
+
+                if self[fieldname] and dimensions and dimensions[0]:
+                    self[fieldname]['dimensions'] = dimensions
 
             elif type_ in [
                 'ReferenceField',
             ]:
-                # If there are references, add the UIDs to the referenced
-                # contents
                 value = field.getRaw(self.context)
-                if value:
-                    self[fieldname] = value
+                self[fieldname] = value
 
             elif type_ in ['QueryField']:
                 value = field.getRaw(self.context)
